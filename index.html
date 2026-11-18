@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>facePay - Pay with your face</title>
 <meta name="description" content="facePay demo: walk up to any self-checkout, we know it's you. Scan, confirm, done.">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=2">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a855f7' stroke-width='2' stroke-linecap='round'><path d='M4 8V6a2 2 0 0 1 2-2h2'/><path d='M16 4h2a2 2 0 0 1 2 2v2'/><path d='M20 16v2a2 2 0 0 1-2 2h-2'/><path d='M8 20H6a2 2 0 0 1-2-2v-2'/><circle cx='9.2' cy='10.2' r='.6' fill='%23a855f7'/><circle cx='14.8' cy='10.2' r='.6' fill='%23a855f7'/><path d='M9.4 14.4c.7.7 1.6 1 2.6 1s1.9-.3 2.6-1'/></svg>">
 </head>
 <body>
@@ -22,17 +22,18 @@
     <a href="#/" data-nav="home">Home</a>
     <a href="#/signup" data-nav="signup">Join</a>
     <a href="#/checkout" data-nav="checkout">Demo</a>
-    <a href="#/dashboard" data-nav="dashboard">Stores</a>
+    <a href="#/account" data-nav="account">Account</a>
+    <a href="#/business" data-nav="business">Stores</a>
   </nav>
-  <span class="badge-pill">BETA</span>
+  <span class="badge-pill">DEMO</span>
 </header>
 
-<main id="app"></main>
+<main id="app" tabindex="-1"></main>
 
-<footer class="site-foot">
+<footer class="site-foot"><div class="footer-links"><a class="wordmark" href="#/">facePay</a><a href="#/security">Trust & FAQ</a><a href="#/business">For stores</a><a href="#/account">My account</a></div>
   <p><strong>facePay</strong> is a demo prototype. Payments, face matching and card charging are simulated - no real cards, faces or payments are processed or stored.</p>
 </footer>
 
-<script src="app.js"></script>
+<script src="app.js?v=2"></script>
 </body>
 </html>
