@@ -26,4 +26,14 @@ CSV uploads use the columns `item,price` with an optional third `barcode` column
 
 ## Deployment
 
-Static assets are deployed to the existing Cloudflare Pages project `facepay`. Only index.html, styles.css and app.js are required. Keep credentials outside the source tree. No production payment or biometric system is connected.
+Static assets are deployed to the existing Cloudflare Pages project `facepay`. The full static output includes the page HTML files, styles.css, app.js, icons and metadata assets. Keep credentials outside the source tree. No production payment or biometric system is connected.
+
+## Finishing assets and page metadata
+
+The site has clean page URLs (`/signup`, `/checkout`, `/account`, `/business`, `/dashboard`, `/security`) with per-page HTML metadata for link previews. Legacy `#/...` links still work. Unknown paths return a styled 404. Cloudflare Pages serves the matching HTML files without a build step.
+
+The favicon, Apple touch icon, install icons and square social image use the facePay gradient wordmark/monogram on the dark aurora treatment. `scripts/icons.py` regenerates these with Python and Pillow; `scripts/finish.py` regenerates the page shells. Keep the metadata in app.js aligned with page-meta.json when editing copy.
+
+For QA, install Playwright locally (`npm install --no-save --no-package-lock playwright` and `npx playwright install chromium`), then run `node qa.cjs`. Set QA_URL to test a deployed origin instead of the built-in local server. The test uses fictional details and clears its own local demo data.
+
+Deploy all root HTML, CSS, JS, image, manifest, robots and sitemap files. Do not deploy node_modules, credentials, .git, test scripts or generator scripts.

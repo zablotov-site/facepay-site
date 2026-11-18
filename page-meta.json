@@ -1,0 +1,34 @@
+{
+  "home": [
+    "Pay with your face | facePay Demo",
+    "Explore facePay, an interactive checkout concept. Try a simulated face match, scan demo items and confirm a fictional payment. No real charges."
+  ],
+  "signup": [
+    "Join the demo | facePay",
+    "Try facePay enrollment with fictional details, an animated face match and a test card. No real cards or biometric data are collected."
+  ],
+  "checkout": [
+    "Self-checkout demo | facePay",
+    "Try the facePay self-checkout: browse the demo catalog, scan barcodes, review your basket and confirm a simulated payment. No real charges."
+  ],
+  "account": [
+    "Your demo account | facePay",
+    "View your browser-only facePay demo profile, fictional wallet and itemized receipts. Manage receipt previews or clear your local demo data."
+  ],
+  "business": [
+    "For stores | facePay Demo",
+    "Explore facePay for stores. Set up a fictional merchant, preview checkout and try a browser-only product catalog. This is not a live payment service."
+  ],
+  "dashboard": [
+    "Store dashboard | facePay Demo",
+    "Preview the facePay store dashboard with clearly labeled sample analytics and a CSV catalog import for your local checkout demo."
+  ],
+  "security": [
+    "Trust & FAQ | facePay",
+    "Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. No real payment or face matching."
+  ],
+  "notfound": [
+    "Page not found | facePay",
+    "This page is not in the facePay demo. Return home or try the self-checkout concept. No real payments are processed."
+  ]
+}
