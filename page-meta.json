@@ -27,6 +27,10 @@
     "Trust & FAQ | facePay",
     "Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. Real local face matching, demo-grade. No real payments."
   ],
+  "tzedakah": [
+    "Tzedakah mode | facePay Demo",
+    "Collector mode for charity collection: match the donor's face, hear the amount, confirm with one green button. Simulated charge, browser-only."
+  ],
   "notfound": [
     "Page not found | facePay",
     "This page is not in the facePay demo. Return home or try the self-checkout concept. No real payments are processed."
