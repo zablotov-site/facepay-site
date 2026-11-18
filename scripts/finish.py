@@ -10,6 +10,7 @@ pages={
 'dashboard':('Store dashboard | facePay Demo','Preview the facePay store dashboard with clearly labeled sample analytics and a CSV catalog import for your local checkout demo.'),
 'security':('Trust & FAQ | facePay','Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. Real local face matching, demo-grade. No real payments.'),
 'tzedakah':('Tzedakah mode | facePay Demo','Collector mode for charity collection: match the donor\'s face, hear the amount, confirm with one green button. Simulated charge, browser-only.'),
+'settings':('Admin settings | facePay','facePay admin settings: amounts, donors and receipts. Login required.'),
 'notfound':('Page not found | facePay','This page is not in the facePay demo. Return home or try the self-checkout concept. No real payments are processed.')}
 base='https://facepay.pages.dev'
 shell=(root/'index.html').read_text()
@@ -45,12 +46,12 @@ for name,(title,desc) in pages.items():
 <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" href="/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="stylesheet" href="/styles.css?v=6">'''
- if name=='notfound':head+='\n<meta name="robots" content="noindex">'
- out=shell.replace('{{HEAD}}',head).replace('src="app.js?v=3"','src="/app.js?v=6"')
+<link rel="stylesheet" href="/styles.css?v=7">'''
+ if name in ('notfound','settings'):head+='\n<meta name="robots" content="noindex">'
+ out=shell.replace('{{HEAD}}',head).replace('/app.js?v=6','/app.js?v=7')
  if name=='notfound':out=out.replace('<body>','<body data-not-found="true">')
  (root/('index.html' if name=='home' else ('404.html' if name=='notfound' else name+'.html'))).write_text(out)
 (root/'page-meta.json').write_text(json.dumps(pages,indent=2)+'\n')
 (root/'site.webmanifest').write_text(json.dumps({'name':'facePay Demo','short_name':'facePay','description':'Interactive checkout prototype. No real payments.','start_url':'/','scope':'/','display':'standalone','background_color':'#04060f','theme_color':'#04060f','icons':[{'src':'/icon-192.png','sizes':'192x192','type':'image/png'},{'src':'/icon-512.png','sizes':'512x512','type':'image/png'}]},indent=2)+'\n')
 (root/'robots.txt').write_text('User-agent: *\nAllow: /\nSitemap: '+base+'/sitemap.xml\n')
-(root/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+base+('/' if n=='home' else '/'+n)+'</loc></url>' for n in pages if n!='notfound')+'</urlset>\n')
+(root/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+''.join('<url><loc>'+base+('/' if n=='home' else '/'+n)+'</loc></url>' for n in pages if n not in ('notfound','settings'))+'</urlset>\n')

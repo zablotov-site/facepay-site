@@ -31,6 +31,10 @@
     "Tzedakah mode | facePay Demo",
     "Collector mode for charity collection: match the donor's face, hear the amount, confirm with one green button. Simulated charge, browser-only."
   ],
+  "settings": [
+    "Admin settings | facePay",
+    "facePay admin settings: amounts, donors and receipts. Login required."
+  ],
   "notfound": [
     "Page not found | facePay",
     "This page is not in the facePay demo. Return home or try the self-checkout concept. No real payments are processed."

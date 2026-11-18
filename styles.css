@@ -629,3 +629,27 @@ p { line-height:1.65; }
 .tz-clip{width:100%;border-radius:14px;background:#000;max-height:300px}.tz-empty{padding:26px;border-radius:22px;text-align:center}
 @media (max-width:820px){.tz-grid{grid-template-columns:1fr}.tz-title{font-size:34px}.tz-hero-actions{grid-template-columns:1fr}.tz-receipt{grid-template-columns:1fr}.tz-amount strong{font-size:60px}}
 @media (prefers-reduced-motion:reduce){.tz-confirm,.tz-rec,.tz-mic.live .tz-mic-dot,.tz-spin{animation:none}}
+
+/* ---- real backend: login, settings, RTL, simulated labels ---- */
+.tz-simbadge{display:inline-block;margin:10px 0;padding:6px 12px;border-radius:999px;border:1px dashed rgba(251,191,36,.6);background:rgba(251,191,36,.08);color:#fcd34d;font-size:11.5px;font-weight:700;letter-spacing:.06em}
+.fp-login{max-width:460px;margin:0 auto}
+.fp-login input,.st input,.st select{width:100%;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:rgba(8,12,28,.7);color:#eef1ff;font:inherit;font-size:16px}
+.fp-login .field,.st .tz-field{margin-bottom:14px}
+.st .tz-field label,.fp-login label{display:block;font-size:13px;font-weight:600;color:#98a3c8;margin:0 2px 6px}
+.tz[dir=rtl]{text-align:right}
+.tz[dir=rtl] .tz-title,.tz[dir=rtl] .tz-sub{text-align:right}
+.tz[lang=yi]{font-family:"Arial Hebrew","Noto Sans Hebrew","Segoe UI",Arial,sans-serif}
+.tz[lang=yi] .eyebrow{letter-spacing:0}
+.tz-foot{display:flex;gap:16px;justify-content:center;margin:18px 0 0;flex-wrap:wrap}
+a.tz-big{display:block;text-decoration:none;text-align:center}
+.st-top{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin:10px 0}
+.st-tabs{display:flex;gap:8px;overflow-x:auto;margin:14px 0;padding-bottom:4px}
+.st-tab{flex:1 0 auto;padding:12px 18px;border-radius:999px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#cfd6f5;font:inherit;font-weight:700;min-height:44px}
+.st-tab.on{background:linear-gradient(135deg,#22d3ee,#6366f1);color:#04060f;border-color:transparent}
+.st-card{padding:18px;margin:0 0 14px;border-radius:18px}
+.st-card .tz-big,.st-card .tz-mid{margin-top:10px;width:100%}
+.st-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:6px 0;flex-wrap:wrap}
+.st-rec.void{opacity:.55}.st-acts{display:flex;gap:10px}.st-acts .tz-mid{margin-top:6px}
+.st-sum{display:flex;justify-content:space-between;align-items:baseline}.st-sum strong{font-size:30px}
+.st-pin{font-weight:700;color:#7ee7a5}
+.st em{font-style:normal;font-size:11.5px;font-weight:700;color:#fcd34d;letter-spacing:.05em}
