@@ -1,6 +1,6 @@
 # facePay
 
-An interactive, browser-only product prototype. No real payments, camera capture, face recognition, ID verification, card entry, or message delivery.
+An interactive, browser-only product prototype. No real payments, face recognition, ID verification, card entry, or message delivery. The face match is always simulated. The barcode scanner uses live camera detection only where the browser supports BarcodeDetector (permission-gated, nothing recorded or uploaded) and clearly falls back to a simulated scan everywhere else.
 
 ## Run
 
@@ -10,7 +10,7 @@ Serve this directory with any static HTTP server, or open index.html. No build s
 
 - Home: `#/`
 - Demo enrollment: `#/signup`
-- Interactive store catalog and checkout: `#/checkout`
+- Interactive store catalog, barcode scanning and checkout: `#/checkout`
 - Local wallet, history, receipt download and reset: `#/account`
 - Demo merchant setup: `#/business`
 - Sample merchant analytics and CSV catalog import: `#/dashboard`
@@ -22,7 +22,7 @@ Profiles, receipts, store setup, catalogs and receipt preferences stay in localS
 
 The merchant analytics are labeled sample data. Actual demo checkouts appear in the customer account history. Downloaded receipts are plain-text demo records, not tax invoices.
 
-CSV uploads use two columns, `item,price`, with an optional header, quoted item names and prices with up to two decimal places. Limit: 500 rows and 100 KB. A valid upload replaces the current browser's demo catalog. Nothing is uploaded to a backend.
+CSV uploads use the columns `item,price` with an optional third `barcode` column (4-14 digits) that powers the checkout scanner, an optional header, quoted item names and prices with up to two decimal places. Scanning a barcode with no matching catalog item leaves the basket unchanged and says so. Limit: 500 rows and 100 KB. A valid upload replaces the current browser's demo catalog. Nothing is uploaded to a backend.
 
 ## Deployment
 

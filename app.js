@@ -14,15 +14,15 @@
 
   /* ---------------- demo store data ---------------- */
   var DEFAULT_PRICES = [
-    ['Organic Milk 1L', 6.90], ['Challah Bread', 8.50], ['Free-Range Eggs x12', 12.90],
-    ['Haas Avocado', 3.50], ['Dark Chocolate 70%', 8.40], [' Cottage Cheese 250g', 5.90],
-    ['Cherry Tomatoes 500g', 9.90], ['Orange Juice 1L', 11.50], ['Butter 200g', 13.20],
-    ['Pita Pack x6', 7.40], ['Greek Yogurt', 4.80], ['Honey Cake', 14.90]
+    ['Organic Milk 1L', 6.90, '7290000000015'], ['Challah Bread', 8.50, '7290000000022'], ['Free-Range Eggs x12', 12.90, '7290000000039'],
+    ['Haas Avocado', 3.50, '7290000000046'], ['Dark Chocolate 70%', 8.40, '7290000000053'], ['Cottage Cheese 250g', 5.90, '7290000000060'],
+    ['Cherry Tomatoes 500g', 9.90, '7290000000077'], ['Orange Juice 1L', 11.50, '7290000000084'], ['Butter 200g', 13.20, '7290000000091'],
+    ['Pita Pack x6', 7.40, '7290000000107'], ['Greek Yogurt', 4.80, '7290000000114'], ['Honey Cake', 14.90, '7290000000121']
   ];
   var priceList = DEFAULT_PRICES.map(function (r) { return [r[0].trim(), r[1]]; });
   try {
     var saved = localStorage.getItem('facepay-prices');
-    if (saved) { var candidate=JSON.parse(saved); if(Array.isArray(candidate) && candidate.length && candidate.length<=500 && candidate.every(function(r){return Array.isArray(r)&&typeof r[0]==='string'&&typeof r[1]==='number'&&Number.isFinite(r[1])&&r[1]>=0&&r[1]<=99999;})) priceList=candidate; }
+    if (saved) { var candidate=JSON.parse(saved); if(Array.isArray(candidate) && candidate.length && candidate.length<=500 && candidate.every(function(r){return Array.isArray(r)&&typeof r[0]==='string'&&typeof r[1]==='number'&&Number.isFinite(r[1])&&r[1]>=0&&r[1]<=99999&&(r.length===2||(r.length===3&&typeof r[2]==='string'&&/^[0-9]{4,14}$/.test(r[2])));})) priceList=candidate; }
   } catch (e) { /* fresh */ }
 
   var profile = {};
@@ -178,7 +178,7 @@
         '<div class="dash-grid">' +
           '<div class="upload-card glass">' +
             '<div class="upload-title">Price list</div>' +
-            '<div class="upload-sub">Upload demo prices for this browser. Your catalog feeds the checkout item picker. CSV columns: item,price.</div>' +
+            '<div class="upload-sub">Upload demo prices for this browser. Your catalog feeds the checkout item picker. CSV columns: item,price,barcode. The barcode column is optional (4-14 digits) and powers the checkout scanner.</div>' +
             '<div class="upload-drop" id="drop">Drop price-list.csv here<br>or tap to browse</div>' +
             '<input type="file" id="file" accept=".csv,text/csv" style="display:none">' +
             '<div class="file-line"><span id="file-name">price-list.csv · ' + priceList.length + ' items</span><span class="synced">Browser only</span></div>' +
@@ -219,7 +219,7 @@
       Array.prototype.forEach.call(document.querySelectorAll('.toggle'), function (t) {
         t.onclick = function () { t.classList.toggle('on'); t.setAttribute('aria-checked',String(t.classList.contains('on'))); };
       });
-      document.getElementById('sample-csv').onclick=function(){download('facepay-example.csv','item,price\nOrganic Milk 1L,6.90\nChallah Bread,8.50\nFree-Range Eggs x12,12.90\n','text/csv');};
+      document.getElementById('sample-csv').onclick=function(){download('facepay-example.csv','item,price,barcode\nOrganic Milk 1L,6.90,7290000000015\nChallah Bread,8.50,7290000000022\nFree-Range Eggs x12,12.90,7290000000039\n','text/csv');};
       var drop = document.getElementById('drop');
       var file = document.getElementById('file');
       drop.onclick = function () { file.click(); };
@@ -242,10 +242,11 @@
             if(index===0 && /^(item|name|product)$/i.test(parts[0].trim()) && /price/i.test(parts[1] || '')) return;
             var name=(parts[0] || '').trim(), raw=(parts[1] || '').trim();
             var price=Number(raw);
-            if(parts.length!==2 || !name || name.length>120 || !/^\d+(\.\d{1,2})?$/.test(raw) || !Number.isFinite(price) || price<0 || price>99999){invalid++;return;}
-            parsed.push([name,price]);
+            var barcode=(parts[2] || '').trim();
+            if(parts.length<2 || parts.length>3 || !name || name.length>120 || !/^\d+(\.\d{1,2})?$/.test(raw) || !Number.isFinite(price) || price<0 || price>99999 || (barcode && !/^[0-9]{4,14}$/.test(barcode))){invalid++;return;}
+            parsed.push(barcode?[name,price,barcode]:[name,price]);
           });
-          if(invalid || !parsed.length || parsed.length>500) { toast('Use up to 500 item,price rows. Prices need 0-2 decimal places. No changes made.'); return; }
+          if(invalid || !parsed.length || parsed.length>500) { toast('Use up to 500 item,price rows, with an optional barcode column of 4-14 digits. Prices need 0-2 decimal places. No changes made.'); return; }
           priceList = parsed;
           try { localStorage.setItem('facepay-prices', JSON.stringify(parsed)); } catch (e) { /* ok */ }
           document.getElementById('file-name').textContent = f.name + ' · ' + parsed.length + ' items';
@@ -316,7 +317,8 @@
     draw();
   }
   var previousFocus;
-  function closeDialog(){var d=document.getElementById('detail-dialog');if(d)d.remove();document.body.classList.remove('modal-open');if(previousFocus)previousFocus.focus();}
+  var onDialogClose=null;
+  function closeDialog(){var d=document.getElementById('detail-dialog');if(d)d.remove();document.body.classList.remove('modal-open');if(onDialogClose){var f=onDialogClose;onDialogClose=null;try{f();}catch(e){}}if(previousFocus)previousFocus.focus();}
   function showDialog(html){
     previousFocus=document.activeElement;
     var dialog=document.createElement('dialog');dialog.id='detail-dialog';dialog.className='detail-dialog glass';dialog.setAttribute('aria-label','Demo details');dialog.innerHTML='<button class="dialog-close" aria-label="Close dialog">×</button>'+html;document.body.appendChild(dialog);dialog.showModal();document.body.classList.add('modal-open');dialog.querySelector('.dialog-close').onclick=closeDialog;dialog.addEventListener('cancel',function(e){e.preventDefault();closeDialog();});dialog.addEventListener('click',function(e){if(e.target===dialog){var r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog();}});
@@ -343,12 +345,13 @@
       app.innerHTML='<div class="checkout-heading">'+eyebrow('SELF-CHECKOUT · SIMULATED')+'<h1 class="page-title">'+esc(store())+'</h1><p class="page-sub">Choose. Review. Confirm. You stay in control.</p><div class="checkout-progress"><span class="'+(phase==='start'?'current':'complete')+'">1 · Identify</span><span class="'+(phase==='shop'?'current':'')+'">2 · Your basket</span><span class="'+(['review','confirm','done'].includes(phase)?'current':'')+'">3 · Confirm</span></div></div><div id="checkout-content"></div>';
       var area=document.getElementById('checkout-content');
       if(phase==='start'){
-        area.innerHTML='<div class="screen-narrow"><div class="glass panel start-card"><div class="scan-wrap"><div class="scan-ring">'+FACE_SVG+'<span class="scan-tag">Animation only</span></div></div><h2>A familiar face.<br>A fresh basket.</h2><p class="muted">Try a fictional face match, then pick exactly what you want from the store catalog. Your camera stays off.</p><button class="btn btn-block" id="start-demo">Start demo →</button></div></div>';
+        area.innerHTML='<div class="screen-narrow"><div class="glass panel start-card"><div class="scan-wrap"><div class="scan-ring">'+FACE_SVG+'<span class="scan-tag">Animation only</span></div></div><h2>A familiar face.<br>A fresh basket.</h2><p class="muted">Try a fictional face match, then pick or scan items from the store catalog. The face match never uses your camera; barcode scanning asks first.</p><button class="btn btn-block" id="start-demo">Start demo →</button></div></div>';
         document.getElementById('start-demo').onclick=function(){this.disabled=true;this.textContent='Simulating match...';setTimeout(function(){if(!document.getElementById('checkout-content'))return;phase='shop';draw();},750);};
       }else if(phase==='shop'){
-        area.innerHTML='<div class="matched-banner"><span class="status-dot"></span> Demo match · '+esc(profile.name?profile.name.split(' ')[0]:'Demo customer')+'<span>Test card •••• 4242</span></div><div class="shopping-grid"><section class="glass panel catalog-panel"><div class="panel-heading"><h2>Pick your items</h2><span class="badge-pill">'+priceList.length+' PRODUCTS</span></div><label class="sr-only" for="product-search">Search products</label><input class="search-input" id="product-search" placeholder="Search the store catalog" value="'+esc(query)+'"><div class="catalog" id="catalog"></div><a class="text-link" href="#/dashboard">Manage store prices ↗</a></section><section class="glass panel basket-panel"><div class="panel-heading"><h2>Your basket</h2><span id="basket-count" class="badge-pill"></span></div><div id="basket-lines"></div><div class="basket-total"><span>Total</span><strong id="basket-total"></strong></div><button class="btn btn-block" id="review-basket">Send to cashier →</button><p class="local-note">Demo prices are final. No tax or fee is added.</p></section></div>';
+        area.innerHTML='<div class="matched-banner"><span class="status-dot"></span> Demo match · '+esc(profile.name?profile.name.split(' ')[0]:'Demo customer')+'<span>Test card •••• 4242</span></div><div class="shopping-grid"><section class="glass panel catalog-panel"><div class="panel-heading"><h2>Pick your items</h2><span class="badge-pill">'+priceList.length+' PRODUCTS</span></div><label class="sr-only" for="product-search">Search products</label><input class="search-input" id="product-search" placeholder="Search the store catalog" value="'+esc(query)+'"><button class="btn btn-scan" id="scan-barcode">▦ Scan a barcode</button><div class="catalog" id="catalog"></div><a class="text-link" href="#/dashboard">Manage store prices ↗</a></section><section class="glass panel basket-panel"><div class="panel-heading"><h2>Your basket</h2><span id="basket-count" class="badge-pill"></span></div><div id="basket-lines"></div><div class="basket-total"><span>Total</span><strong id="basket-total"></strong></div><button class="btn btn-block" id="review-basket">Send to cashier →</button><p class="local-note">Demo prices are final. No tax or fee is added.</p></section></div>';
         document.getElementById('product-search').oninput=function(){query=this.value;catalog();};catalog();basketView();
         document.getElementById('review-basket').onclick=function(){if(!basket.length)return;phase='review';draw();};
+        document.getElementById('scan-barcode').onclick=openScan;
       }else if(phase==='review'||phase==='confirm'){
         area.innerHTML='<div class="screen-narrow"><div class="glass panel"><span class="receipt-stamp">'+(phase==='review'?'CASHIER REVIEW · DEMO':'✓ CASHIER CONFIRMED · DEMO')+'</span><h2>'+ (phase==='review'?'One more pair of eyes.':'Your turn to confirm.')+'</h2><p class="muted">'+(phase==='review'?'In the real concept, a cashier checks this basket. Use the button below to simulate their approval.':'Review the final total. No real payment will be made.')+'</p>'+basket.map(function(i){return '<div class="item-row"><span>'+esc(i.name)+' <small>× '+i.qty+'</small></span><strong>'+fmt(i.price*i.qty)+'</strong></div>';}).join('')+'<div class="basket-total"><span>Demo total</span><strong>'+fmt(sum())+'</strong></div><button class="btn btn-block" id="confirm-step">'+(phase==='review'?'Simulate cashier approval':'Confirm demo payment · '+fmt(sum()))+'</button><button class="btn btn-ghost btn-block" id="edit-basket">← Edit basket</button><p class="local-note">Fictional test card ending 4242. Nothing is charged.</p></div></div>';
         document.getElementById('edit-basket').onclick=function(){phase='shop';draw();};
@@ -361,7 +364,7 @@
     function catalog(){
       var found=priceList.map(function(i,n){return {name:i[0],price:i[1],index:n};}).filter(function(i){return i.name.toLowerCase().includes(query.toLowerCase());});
       document.getElementById('catalog').innerHTML=found.length?found.map(function(i){var inBasket=basket.find(function(b){return b.index===i.index;});return '<div class="product-row"><span class="product-icon" aria-hidden="true">'+(['◒','◇','▤','◉'][i.index%4])+'</span><span class="product-info"><strong>'+esc(i.name)+'</strong><span>'+fmt(i.price)+' each'+(inBasket?' · '+inBasket.qty+' in basket':'')+'</span></span><button class="add-product" data-add="'+i.index+'" aria-label="Add '+esc(i.name)+'">+</button></div>';}).join(''):'<p class="empty-search">No products match. Try another search.</p>';
-      app.querySelectorAll('[data-add]').forEach(function(b){b.onclick=function(){var n=Number(b.dataset.add),item=basket.find(function(i){return i.index===n;});if(item){if(item.qty>=99){toast('Demo limit: 99 per item');return;}item.qty++;}else basket.push({index:n,name:priceList[n][0],price:priceList[n][1],qty:1});var focus=n;catalog();basketView();var button=app.querySelector('[data-add="'+focus+'"]');if(button)button.focus();};});
+      app.querySelectorAll('[data-add]').forEach(function(b){b.onclick=function(){var n=Number(b.dataset.add);if(addItem(n)===false)return;var button=app.querySelector('[data-add="'+n+'"]');if(button)button.focus();};});
     }
     function basketView(){
       var count=basket.reduce(function(s,i){return s+i.qty;},0);document.getElementById('basket-count').textContent=count+' ITEMS';
@@ -369,6 +372,90 @@
       document.getElementById('basket-lines').innerHTML=basket.length?basket.map(function(i){return '<div class="basket-line"><div><strong>'+esc(i.name)+'</strong><span>'+fmt(i.price)+' each</span></div><div class="quantity"><button data-qty="'+i.index+'" data-delta="-1" aria-label="Remove one '+esc(i.name)+'">−</button><span>'+i.qty+'</span><button data-qty="'+i.index+'" data-delta="1" aria-label="Add one '+esc(i.name)+'">+</button></div><strong>'+fmt(i.price*i.qty)+'</strong><button class="remove-item" data-remove="'+i.index+'" aria-label="Remove '+esc(i.name)+' from basket">×</button></div>';}).join(''):'<div class="empty-basket">Your basket is waiting.<br><span>Tap + next to an item to add it.</span></div>';
       app.querySelectorAll('[data-qty]').forEach(function(b){b.onclick=function(){var item=basket.find(function(i){return i.index===Number(b.dataset.qty);});item.qty=Math.min(99,item.qty+Number(b.dataset.delta));basket=basket.filter(function(i){return i.qty>0;});catalog();basketView();};});
       app.querySelectorAll('[data-remove]').forEach(function(b){b.onclick=function(){basket=basket.filter(function(i){return i.index!==Number(b.dataset.remove);});catalog();basketView();};});
+    }
+    function addItem(n){
+      var item=basket.find(function(i){return i.index===n;});
+      if(item){if(item.qty>=99){toast('Demo limit: 99 per item');return false;}item.qty++;}
+      else basket.push({index:n,name:priceList[n][0],price:priceList[n][1],qty:1});
+      catalog();basketView();
+      return true;
+    }
+    var scanStream=null, scanTimer=null;
+    function stopScan(){
+      if(scanTimer){clearInterval(scanTimer);scanTimer=null;}
+      if(scanStream){scanStream.getTracks().forEach(function(t){try{t.stop();}catch(e){}});scanStream=null;}
+    }
+    function findByBarcode(code){
+      code=String(code).trim();
+      for(var n=0;n<priceList.length;n++){ if(priceList[n][2] && String(priceList[n][2])===code) return n; }
+      return -1;
+    }
+    function openScan(){
+      stopScan();
+      var supported = 'BarcodeDetector' in window && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+      showDialog('<div class="scan-dialog"><span class="receipt-stamp">BARCODE SCANNER · DEMO</span><h2>Scan a barcode</h2><div id="scan-stage"></div><div class="scan-actions"><button class="text-button" id="scan-simulate">Simulate a scan instead</button><button class="text-button" id="scan-cancel">Cancel</button></div></div>');
+      onDialogClose=stopScan;
+      document.getElementById('scan-cancel').onclick=closeDialog;
+      document.getElementById('scan-simulate').onclick=function(){simulatedScan(false);};
+      if(supported) realScan(); else simulatedScan(true);
+    }
+    function scanSuccess(n, code, simulated){
+      var stage=document.getElementById('scan-stage'); if(!stage) return;
+      var added=addItem(n);
+      stage.innerHTML='<div class="scan-result ok"><div class="check">✓</div><h3>'+esc(priceList[n][0])+'</h3><p class="muted">'+fmt(priceList[n][1])+' · barcode '+esc(code)+(simulated?' · simulated scan':'')+'</p>'+(added===false?'<p class="muted">Already at the demo limit of 99 per item.</p>':'')+'</div><div class="scan-actions"><button class="btn btn-block" id="scan-another">Scan another</button><button class="text-button" id="scan-done">Done</button></div>';
+      if(added!==false) toast('Scanned: '+priceList[n][0]+' added to your basket');
+      document.getElementById('scan-another').onclick=function(){closeDialog();openScan();};
+      document.getElementById('scan-done').onclick=closeDialog;
+    }
+    function scanUnknown(code, retry){
+      var stage=document.getElementById('scan-stage'); if(!stage) return;
+      stage.innerHTML='<div class="scan-result unknown"><h3>Barcode not in catalog</h3><p class="muted">No item in this store\'s price list matches <strong>'+esc(code)+'</strong>. Unknown items stay out of the basket.</p></div><div class="scan-actions"><button class="btn btn-block" id="scan-retry">Try again</button><button class="text-button" id="scan-done">Close</button></div>';
+      document.getElementById('scan-retry').onclick=retry;
+      document.getElementById('scan-done').onclick=closeDialog;
+    }
+    function realScan(){
+      var stage=document.getElementById('scan-stage'); if(!stage) return;
+      stage.innerHTML='<div class="viewfinder live"><video id="scan-video" autoplay playsinline muted></video><span class="vf-line"></span></div><p class="scan-status">Camera is used for live barcode detection only. Nothing is recorded or uploaded.</p>';
+      navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}}).then(function(stream){
+        if(!document.getElementById('scan-stage')){stream.getTracks().forEach(function(t){try{t.stop();}catch(e){}});return;}
+        scanStream=stream;
+        var video=document.getElementById('scan-video'); if(!video){stopScan();return;}
+        video.srcObject=stream;
+        var detector;
+        try{ detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code']}); }
+        catch(e){ stopScan(); simulatedScan(true); return; }
+        scanTimer=setInterval(function(){
+          var v=document.getElementById('scan-video');
+          if(!v||v.readyState<2)return;
+          detector.detect(v).then(function(codes){
+            if(!codes||!codes.length)return;
+            var code=String(codes[0].rawValue||'').trim();
+            if(!code)return;
+            stopScan();
+            var n=findByBarcode(code);
+            if(n>=0) scanSuccess(n, code, false); else scanUnknown(code, function(){realScan();});
+          }).catch(function(){});
+        },350);
+      }).catch(function(){
+        toast('Camera unavailable - using a simulated scan');
+        simulatedScan(true);
+      });
+    }
+    function simulatedScan(auto){
+      stopScan();
+      var stage=document.getElementById('scan-stage'); if(!stage) return;
+      var pool=[];
+      for(var n=0;n<priceList.length;n++){ if(priceList[n][2]) pool.push(n); }
+      if(!pool.length){
+        stage.innerHTML='<div class="scan-result unknown"><h3>No barcodes on file</h3><p class="muted">This price list has no barcode column yet. Upload a CSV with barcodes from the store dashboard.</p></div>';
+        return;
+      }
+      stage.innerHTML='<div class="viewfinder sim"><span class="sim-bars" aria-hidden="true"></span><span class="vf-line"></span><span class="scan-tag">Simulated</span></div><p class="scan-status">'+(auto?'Live scanning is not available in this browser, so this scan is simulated. ':'')+'Scanning the item...</p>';
+      setTimeout(function(){
+        if(!document.getElementById('scan-stage'))return;
+        var pick=pool[Math.floor(Math.random()*pool.length)];
+        scanSuccess(pick, priceList[pick][2], true);
+      },1900);
     }
     draw();
   }
