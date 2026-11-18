@@ -424,6 +424,7 @@
         scanStream=stream;
         var video=document.getElementById('scan-video'); if(!video){stopScan();return;}
         video.srcObject=stream;
+        var played=video.play(); if(played&&played.catch)played.catch(function(){});
         var detector;
         try{ detector=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','code_39','qr_code']}); }
         catch(e){ stopScan(); simulatedScan(true); return; }
