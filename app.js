@@ -393,14 +393,16 @@
     function openScan(){
       stopScan();
       var supported = 'BarcodeDetector' in window && !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-      showDialog('<div class="scan-dialog"><span class="receipt-stamp">BARCODE SCANNER · DEMO</span><h2>Scan a barcode</h2><div id="scan-stage"></div><div class="scan-actions"><button class="text-button" id="scan-simulate">Simulate a scan instead</button><button class="text-button" id="scan-cancel">Cancel</button></div></div>');
+      showDialog('<div class="scan-dialog"><span class="receipt-stamp">BARCODE SCANNER · DEMO</span><h2>Scan a barcode</h2><div id="scan-stage"></div><div class="scan-actions" id="scan-foot"><button class="text-button" id="scan-simulate">Simulate a scan instead</button><button class="text-button" id="scan-cancel">Cancel</button></div></div>');
       onDialogClose=stopScan;
       document.getElementById('scan-cancel').onclick=closeDialog;
       document.getElementById('scan-simulate').onclick=function(){simulatedScan(false);};
       if(supported) realScan(); else simulatedScan(true);
     }
+    function hideFoot(){var f=document.getElementById('scan-foot'); if(f) f.style.display='none';}
     function scanSuccess(n, code, simulated){
       var stage=document.getElementById('scan-stage'); if(!stage) return;
+      hideFoot();
       var added=addItem(n);
       stage.innerHTML='<div class="scan-result ok"><div class="check">✓</div><h3>'+esc(priceList[n][0])+'</h3><p class="muted">'+fmt(priceList[n][1])+' · barcode '+esc(code)+(simulated?' · simulated scan':'')+'</p>'+(added===false?'<p class="muted">Already at the demo limit of 99 per item.</p>':'')+'</div><div class="scan-actions"><button class="btn btn-block" id="scan-another">Scan another</button><button class="text-button" id="scan-done">Done</button></div>';
       if(added!==false) toast('Scanned: '+priceList[n][0]+' added to your basket');
@@ -409,6 +411,7 @@
     }
     function scanUnknown(code, retry){
       var stage=document.getElementById('scan-stage'); if(!stage) return;
+      hideFoot();
       stage.innerHTML='<div class="scan-result unknown"><h3>Barcode not in catalog</h3><p class="muted">No item in this store\'s price list matches <strong>'+esc(code)+'</strong>. Unknown items stay out of the basket.</p></div><div class="scan-actions"><button class="btn btn-block" id="scan-retry">Try again</button><button class="text-button" id="scan-done">Close</button></div>';
       document.getElementById('scan-retry').onclick=retry;
       document.getElementById('scan-done').onclick=closeDialog;
