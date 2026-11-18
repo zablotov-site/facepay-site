@@ -493,6 +493,6 @@
 
   document.addEventListener('click', function(e) { var a=e.target.closest('a'); if(!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target || a.hasAttribute('download')) return; var u=new URL(a.href,location.href); if(u.origin!==location.origin || u.hash || !/^\/(signup|checkout|dashboard|account|business|security)?$/.test(u.pathname)) return; e.preventDefault(); window.history.pushState({},'',u.pathname); delete document.body.dataset.notFound; route(); document.getElementById('app').focus({preventScroll:true}); });
   window.addEventListener('popstate',route);
-  window.addEventListener('hashchange', route);
+  window.addEventListener('hashchange', function(){if(location.hash.indexOf('#/')===0)route();});
   route();
 })();
