@@ -2,19 +2,20 @@ from pathlib import Path
 import re, json, html
 root=Path(__file__).resolve().parent.parent
 pages={
-'home':('Pay with your face | facePay Demo','Explore facePay, an interactive checkout concept. Try a simulated face match, scan demo items and confirm a fictional payment. No real charges.'),
-'signup':('Join the demo | facePay','Try facePay enrollment with fictional details, an animated face match and a test card. No real cards or biometric data are collected.'),
+'home':('Pay with your face | facePay Demo','Explore facePay, an interactive checkout concept. Try on-device face matching, scan demo items and confirm a fictional payment. No real charges.'),
+'signup':('Join the demo | facePay','Try facePay enrollment with fictional details, optional local face enrollment and a test card. Face descriptors stay on your device. No real cards are collected.'),
 'checkout':('Self-checkout demo | facePay','Try the facePay self-checkout: browse the demo catalog, scan barcodes, review your basket and confirm a simulated payment. No real charges.'),
 'account':('Your demo account | facePay','View your browser-only facePay demo profile, fictional wallet and itemized receipts. Manage receipt previews or clear your local demo data.'),
 'business':('For stores | facePay Demo','Explore facePay for stores. Set up a fictional merchant, preview checkout and try a browser-only product catalog. This is not a live payment service.'),
 'dashboard':('Store dashboard | facePay Demo','Preview the facePay store dashboard with clearly labeled sample analytics and a CSV catalog import for your local checkout demo.'),
-'security':('Trust & FAQ | facePay','Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. No real payment or face matching.'),
+'security':('Trust & FAQ | facePay','Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. Real local face matching, demo-grade. No real payments.'),
 'notfound':('Page not found | facePay','This page is not in the facePay demo. Return home or try the self-checkout concept. No real payments are processed.')}
 base='https://facepay.pages.dev'
 shell=(root/'index.html').read_text()
 shell=re.sub(r'<head>.*?</head>','<head>\n{{HEAD}}\n</head>',shell,flags=re.S)
 shell=re.sub(r'href="#/([^\"]*)"',lambda m:'href="/'+m[1]+'"',shell)
 shell=shell.replace('<main id="app" tabindex="-1"></main>','<main id="app" tabindex="-1"><noscript><div class="glass panel"><h1>facePay Demo</h1><p>This interactive prototype needs JavaScript. No real payments are processed.</p></div></noscript></main>')
+shell=re.sub(r'<a class="skip-link" href="#app">Skip to content</a>\s*','',shell)
 shell=shell.replace('<body>','<body>\n<a class="skip-link" href="#app">Skip to content</a>')
 for name,(title,desc) in pages.items():
  url=base+('/' if name=='home' else '/'+('404' if name=='notfound' else name))
@@ -43,9 +44,9 @@ for name,(title,desc) in pages.items():
 <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" href="/favicon.ico">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="manifest" href="/site.webmanifest">
-<link rel="stylesheet" href="/styles.css?v=4">'''
+<link rel="stylesheet" href="/styles.css?v=5">'''
  if name=='notfound':head+='\n<meta name="robots" content="noindex">'
- out=shell.replace('{{HEAD}}',head).replace('src="app.js?v=3"','src="/app.js?v=4"')
+ out=shell.replace('{{HEAD}}',head).replace('src="app.js?v=3"','src="/app.js?v=5"')
  if name=='notfound':out=out.replace('<body>','<body data-not-found="true">')
  (root/('index.html' if name=='home' else ('404.html' if name=='notfound' else name+'.html'))).write_text(out)
 (root/'page-meta.json').write_text(json.dumps(pages,indent=2)+'\n')

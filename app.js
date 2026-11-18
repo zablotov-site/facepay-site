@@ -1,4 +1,4 @@
-/* facePay demo - all interactions simulated client-side. No real payments, faces or cards. */
+/* facePay: real local face matching, simulated payments. */
 (function () {
   'use strict';
 
@@ -44,14 +44,14 @@
       '<span class="demo-chip">Interactive concept · no real payments</span><div class="home-grid">' +
         '<div>' +
           '<h1 class="hero-title">Pay with<br><span class="grad">your face.</span></h1>' +
-          '<p class="hero-sub">A new checkout concept. Look, pick your items, review, and confirm. Try it without sharing a real card or using your camera.</p>' +
+          '<p class="hero-sub">A new checkout concept. Look, pick your items, review, and confirm. Try real on-device face matching without sharing a real card. Camera access is optional.</p>' +
           '<p class="hero-heb">משלמים עם הפנים. בלי ארנק, בלי טלפון.</p>' +
           '<div class="btn-row">' +
             '<a class="btn" href="/signup">Join facePay</a>' +
             '<a class="btn btn-ghost" href="/checkout">Try the live demo</a>' +
           '</div>' +
           '<div class="steps">' +
-            step(1, 'Look at the camera', 'A simulated match, with your camera off') +
+            step(1, 'Look at the camera', 'Real local matching, or a camera-free demo') +
             step(2, 'Scan your items', 'Prices come from the store\'s own list') +
             step(3, 'Cashier confirms', 'A human checks every purchase') +
             step(4, 'You press confirm', 'Complete the demo and view your receipt') +
@@ -59,7 +59,7 @@
           '<p class="hero-sub" style="font-size:13px">No wallet. No phone. <strong style="color:#cdd6f6">Just you.</strong></p><a class="text-link" href="/security">A clear look at privacy & safety ↗</a>' +
         '</div>' +
         '<div class="scan-wrap"><div class="scan-ring"><div class="scan-line"></div>' + FACE_SVG +
-          '<span class="scan-tag">Face matched</span></div></div>' +
+          '<span class="scan-tag">On-device matching</span></div></div>' +
       '</div>';
 
     function step(n, name, detail) {
@@ -82,7 +82,7 @@
     function draw() {
       var html = '<div class="screen-narrow">' +
         '<h2 class="page-title">Join facePay</h2>' +
-        '<p class="page-sub">Try the enrollment concept. Use fictional details only.</p>' + dots();
+        '<p class="page-sub">Enroll your face locally. Use fictional contact details only.</p>' + dots();
 
       if (state.step === 1) {
         html += '<div class="form-card glass">' +
@@ -91,12 +91,7 @@
           '<div class="field"><label for="f-email">Fictional email</label><input id="f-email" type="email" placeholder="demo@example.com" maxlength="100" value="' + esc(state.email) + '"></div>' +
           '<button class="btn btn-block" id="next1">Continue</button><button class="text-button" id="sample-details">Use sample details instead</button></div>';
       } else if (state.step === 2) {
-        html += '<div class="form-card glass" style="text-align:center">' +
-          '<p class="page-sub" style="margin-bottom:4px">Step 2 - your face</p>' +
-          '<div class="scan-wrap"><div class="scan-ring" id="signup-ring"><div class="scan-line"></div>' + FACE_SVG +
-          '<span class="scan-tag" id="signup-tag">Ready</span></div></div>' +
-          '<p class="page-sub" id="face-hint">This is an animation. Your camera will not be opened.</p>' +
-          '<button class="btn btn-block" id="scanface">Simulate face scan</button></div>';
+        html += '<div class="form-card glass"><p class="eyebrow">STEP 2 · ON-DEVICE FACE ENROLLMENT</p><div class="face-enrollment" id="signup-face"></div></div>';
       } else if (state.step === 3) {
         html += '<span class="demo-chip">Fictional test card · no real card entry</span>' +
           '<div class="form-card glass"><p class="eyebrow">READY TO TRY</p><h3>One test card.<br>Zero real charges.</h3><div class="test-card"><span>facePay Demo</span><strong>•••• •••• •••• 4242</strong><small>Fictional card · not a payment method</small></div><p class="muted">No card number, expiry or security code is needed. This test card only completes the demo.</p><button class="btn btn-block" id="finish-demo">Use test card & finish</button></div>';
@@ -104,7 +99,7 @@
         html += '<div class="receipt glass">' +
           '<div class="check">✓</div>' +
           '<h3>You\'re in' + (state.name ? ', ' + esc(state.name.split(' ')[0]) : '') + '.</h3>' +
-          '<p class="r-sub">Demo profile · ' + esc(state.phone || 'phone set') + ' · card ending ' + esc(state.last4 || '4242') + '</p>' +
+          '<p class="r-sub">'+(state.descriptors?'Face enrolled on this device':'Simulated profile · no face enrolled')+' · ' + esc(state.phone || 'phone set') + ' · card ending ' + esc(state.last4 || '4242') + '</p>' +
           '<div class="btn-row" style="justify-content:center">' +
             '<a class="btn" href="/checkout">Try the self-checkout demo</a><a class="btn btn-ghost" href="/account">My account</a>' +
           '</div></div>';
@@ -126,31 +121,14 @@
         if (!state.name || !state.phone || !state.email) { toast('Fill in name, phone and email to continue'); return; }
         state.step = 2; draw();
       };
-      var sf = document.getElementById('scanface');
-      if (sf) sf.onclick = function () {
-        var ring = document.getElementById('signup-ring');
-        var tag = document.getElementById('signup-tag');
-        var hint = document.getElementById('face-hint');
-        sf.disabled = true;
-        ring.classList.add('scanning');
-        tag.textContent = 'Scanning...';
-        hint.textContent = 'Hold still...';
-        setTimeout(function () {
-          ring.classList.remove('scanning');
-          ring.classList.add('matched');
-          tag.textContent = 'Demo match complete';
-          hint.textContent = 'No image was captured or biometric data created.';
-          state.face = true;
-          sf.textContent = 'Continue';
-          sf.disabled = false;
-          sf.onclick = function () { state.step = 3; draw(); };
-        }, 2400);
-      };
+      var faceHost = document.getElementById('signup-face');
+      if (faceHost) FacePayFace.mount(faceHost, {mode:'enroll', onEnroll:function(samples){state.descriptors=samples;state.step=3;draw();}, onDemo:function(){state.descriptors=null;state.step=3;draw();}});
       var finish = document.getElementById('finish-demo');
       if (finish) finish.onclick = function () {
         state.last4 = '4242';
         profile = { name: state.name, phone: state.phone, email: state.email, last4: '4242' };
-        save('facepay-profile', profile);
+        if(state.descriptors){profile.faceModel='face-api-0.22.2';profile.faceDescriptors=state.descriptors;profile.faceEnrolledAt=new Date().toISOString();}
+        try{localStorage.setItem('facepay-profile',JSON.stringify(profile));}catch(e){toast('Could not save this profile. Browser storage may be full or disabled. Please retry.');return;}
         state.step = 4; draw();
       };
     }
@@ -295,7 +273,7 @@
       var spent = history.reduce(function(s,t){return s+txTotal(t);},0);
       app.innerHTML = '<div class="account-head">' + eyebrow('YOUR DEMO WALLET') + '<h1 class="page-title">A little more<br><span class="grad">peace of mind.</span></h1><p class="page-sub">Every demo checkout. Every detail. One place.</p></div>' +
         '<div class="account-grid"><div><section class="wallet-card glass"><div class="wallet-top"><span>facePay</span><span class="badge-pill">TEST CARD</span></div><div class="wallet-orbit">'+FACE_SVG_SM+'</div><p class="card-digits">•••• &nbsp; •••• &nbsp; •••• &nbsp; 4242</p><div class="wallet-bottom"><span>'+esc(profile.name || 'Demo customer')+'</span><span>No real funds</span></div></section>' +
-        '<div class="mini-stats"><div><strong>'+history.length+'</strong><span>Demo checkouts</span></div><div><strong>'+fmt(spent)+'</strong><span>Simulated total</span></div></div><p class="local-note">Stored only in this browser. Not a real bank account.</p></div>' +
+        '<p class="local-note face-account-state">'+(FacePayFace.enrolled(profile)?'✓ Face enrolled locally · 3 captures · this browser only':'No real face enrolled on this browser')+' <a class="text-link" href="/signup">'+(FacePayFace.enrolled(profile)?'Re-enroll face':'Enroll face')+'</a></p><div class="mini-stats"><div><strong>'+history.length+'</strong><span>Demo checkouts</span></div><div><strong>'+fmt(spent)+'</strong><span>Simulated total</span></div></div><p class="local-note">Stored only in this browser. Not a real bank account.</p></div>' +
         '<section class="glass panel"><div class="panel-heading"><h2>Activity</h2><span class="badge-pill">LOCAL ONLY</span></div><label class="sr-only" for="tx-search">Search receipts by store or receipt ID</label><input class="search-input" id="tx-search" placeholder="Search store or receipt ID" value="'+esc(search)+'"><div id="activity-list"></div></section></div>' +
         '<section class="glass panel preferences"><div><p class="eyebrow">YOU ARE IN CONTROL</p><h2>Your demo settings</h2><p class="muted">Preview receipt preferences. No messages are actually sent.</p></div><div>'+prefToggle('email','Email receipts',prefs.email)+prefToggle('sms','SMS receipts',prefs.sms)+'<a class="text-link" href="/security">How this demo uses your data ↗</a></div></section>' +
         '<section class="reset-panel"><div><h3>Leave no trace on this browser.</h3><p class="muted">Clear your demo profile, receipts, store setup and price list.</p></div><button class="btn btn-ghost" id="reset-data">Reset demo data</button></section>';
@@ -332,23 +310,25 @@
     document.getElementById('merchant-form').onsubmit=function(e){e.preventDefault();var name=document.getElementById('store-name').value.trim();if(!name){toast('Add a demo store name');return;}merchant={name:name,type:document.getElementById('store-type').value,lanes:Number(document.getElementById('store-lanes').value)};save('facepay-merchant',merchant);app.innerHTML='<div class="screen-narrow"><p class="eyebrow">STORE PREVIEW · 02 / 02</p><div class="glass panel setup-success"><span class="receipt-stamp">✓ DEMO SETUP SAVED</span><h1 class="page-title">Welcome to<br>'+esc(name)+'.</h1><p class="muted">Your sample workspace is ready. Nothing has been connected to a real store.</p><div class="setup-summary"><div><span>Store type</span><strong>'+esc(merchant.type)+'</strong></div><div><span>Demo lanes</span><strong>'+merchant.lanes+'</strong></div><div><span>Payments</span><strong>Simulated only</strong></div></div><a class="btn btn-block" href="/dashboard">Open my demo dashboard →</a><a class="text-link" href="/business">Edit store setup</a></div></div>';window.scrollTo(0,0);};
   }
   function renderSecurity(app){
-    var faqs=[['Does this demo use my camera?','The face match is always an animation and never uses your camera or creates a biometric template. Barcode scanning can use your camera only after you choose it and allow access in a supported browser. Camera frames are used locally for barcode detection, not recorded or uploaded. Other browsers offer a clearly labeled simulated scan.'],['Will a card be charged?','No. The demo uses a fixed fictional card ending 4242. No card number, expiry, CVC, ID document or payment credentials are needed.'],['What is saved, and where?','Your demo profile, checkout receipts, price list, store preview and receipt preferences are saved in localStorage in this browser. They are not an online account and do not sync between devices. The hosting provider may receive ordinary web request metadata when you visit.'],['Are SMS and email receipts actually sent?','No. Receipt delivery is a preview only. You can view and download a plain-text demo receipt in My account.'],['How would a real facePay protect people?','A production version would need explicit biometric consent, a non-biometric checkout option, secure template handling, a regulated payment partner, fraud checks, deletion rules and independent security and legal review. None of that is implemented or certified here.'],['Can I use this in my store today?','Only as a product demonstration. There is no live payment processing, hardware integration, identity verification, merchant contract or published store pricing.'],['How do I delete my demo data?','Open My account and choose Reset demo data. This clears facePay data in this browser only. Any receipt files you downloaded must be deleted separately.']];
-    app.innerHTML='<div class="trust-hero">'+eyebrow('TRUST, WITHOUT THE FINE PRINT')+'<h1 class="hero-title">Your face.<br><span class="grad">Your choice.</span></h1><p class="hero-sub">A payment experience should earn trust before asking for it. Here is exactly what this prototype does, and what it does not.</p></div><div class="trust-banner glass"><span class="status-dot"></span><div><strong>This is a simulation.</strong><p>No real card entry. No biometric enrollment. Optional camera access for barcode scanning only.</p></div></div><div class="trust-grid"><section class="glass panel"><span class="feature-mark">◎</span><p class="eyebrow">TODAY · THE DEMO</p><h2>Barcodes, not faces.<br>Nothing to charge.</h2><p class="muted">The face animation and cashier review are scripted. Optional live barcode scanning stays on your device. The test card is fictional. Your checkout is a local demo receipt, not a payment.</p><a class="text-link" href="/account">Manage local demo data ↗</a></section><section class="glass panel future-card"><span class="feature-mark">↗</span><p class="eyebrow">TOMORROW · DESIGN GOALS</p><h2>Built on consent.<br>Never assumption.</h2><p class="muted">A real service would require consent-based biometric processing, payment tokenization, access controls and independent review. These are goals, not claims about this demo.</p><span class="badge-pill">NOT IMPLEMENTED</span></section></div><section class="faq-section"><p class="eyebrow">GOOD QUESTIONS. STRAIGHT ANSWERS.</p><h2 class="page-title">Before you try it.</h2><div class="faq-list">'+faqs.map(function(f,i){return '<details '+(i===0?'open':'')+'><summary>'+f[0]+'<span aria-hidden="true">+</span></summary><p>'+f[1]+'</p></details>';}).join('')+'</div></section><section class="glass trust-end"><h2>Try the experience.<br>Keep your real details to yourself.</h2><a class="btn" href="/checkout">Start a demo checkout →</a></section>';
+    var faqs=[['Does this demo use my camera?','Yes, only after you choose Enable camera and allow access. Enrollment uses three captures to create local face descriptors. Checkout compares new captures against that profile with a distance threshold. All face processing stays in your browser; frames and descriptors are never uploaded. You can always choose the separately labeled simulated path. Barcode scanning may also request the camera.'],['Will a card be charged?','No. The demo uses a fixed fictional card ending 4242. No card number, expiry, CVC, ID document or payment credentials are needed.'],['What is saved, and where?','Your demo profile (including three numeric face descriptors if you enroll), checkout receipts, price list, store preview and receipt preferences are saved in localStorage in this browser. No photos are saved. Local storage is not a secure biometric vault: other people or scripts with access to this browser could access it. They are not an online account and do not sync between devices. The hosting provider may receive ordinary web request metadata when you visit.'],['Are SMS and email receipts actually sent?','No. Receipt delivery is a preview only. You can view and download a plain-text demo receipt in My account.'],['Is this secure enough for real payments?','A production version would need explicit biometric consent, a non-biometric checkout option, secure template handling, a regulated payment partner, fraud checks, deletion rules and independent security and legal review. This prototype has no liveness detection, identity verification, encryption at rest or security certification. Never use its match to authorize a real charge.'],['Can I use this in my store today?','Only as a product demonstration. There is no live payment processing, hardware integration, identity verification, merchant contract or published store pricing.'],['How do I delete my demo data?','Open My account and choose Reset demo data. This clears facePay data in this browser only. Any receipt files you downloaded must be deleted separately.']];
+    app.innerHTML='<div class="trust-hero">'+eyebrow('TRUST, WITHOUT THE FINE PRINT')+'<h1 class="hero-title">Your face.<br><span class="grad">Your choice.</span></h1><p class="hero-sub">A payment experience should earn trust before asking for it. Here is exactly what this prototype does, and what it does not.</p></div><div class="trust-banner glass"><span class="status-dot"></span><div><strong>Real face matching. Demo payments.</strong><p>Real on-device face matching, demo-grade - not bank-level security. No liveness or anti-spoofing protection. A photo may fool it.</p></div></div><div class="trust-grid"><section class="glass panel"><span class="feature-mark">◎</span><p class="eyebrow">TODAY · THE DEMO</p><h2>Your face stays here.<br>Nothing to charge.</h2><p class="muted">Face enrollment and matching run locally with face-api.js. Models are served by this site; no camera frames or face descriptors leave your browser. Matching can be wrong and is not identity verification. Cashier review and the test card are simulated. Your checkout creates a local demo receipt, not a payment.</p><a class="text-link" href="/account">Manage local demo data ↗</a></section><section class="glass panel future-card"><span class="feature-mark">↗</span><p class="eyebrow">TOMORROW · DESIGN GOALS</p><h2>Built on consent.<br>Never assumption.</h2><p class="muted">A real service would require consent-based biometric processing, payment tokenization, access controls and independent review. These are goals, not claims about this demo.</p><span class="badge-pill">NOT IMPLEMENTED</span></section></div><section class="faq-section"><p class="eyebrow">GOOD QUESTIONS. STRAIGHT ANSWERS.</p><h2 class="page-title">Before you try it.</h2><div class="faq-list">'+faqs.map(function(f,i){return '<details '+(i===0?'open':'')+'><summary>'+f[0]+'<span aria-hidden="true">+</span></summary><p>'+f[1]+'</p></details>';}).join('')+'</div></section><section class="glass trust-end"><h2>Try the experience.<br>Keep your real details to yourself.</h2><a class="btn" href="/checkout">Start a demo checkout →</a></section>';
   }
 
   /* ---------------- customer-controlled checkout ---------------- */
   function renderCheckoutV2(app) {
-    var phase='start', basket=[], query='', completed=null;
+    var phase='start', basket=[], query='', completed=null, realMatched=false;
     function sum(){return basket.reduce(function(s,i){return s+i.price*i.qty;},0);}
     function store(){return merchant ? merchant.name : 'GreenMart';}
     function draw(){
-      app.innerHTML='<div class="checkout-heading">'+eyebrow('SELF-CHECKOUT · SIMULATED')+'<h1 class="page-title">'+esc(store())+'</h1><p class="page-sub">Choose. Review. Confirm. You stay in control.</p><div class="checkout-progress"><span class="'+(phase==='start'?'current':'complete')+'">1 · Identify</span><span class="'+(phase==='shop'?'current':'')+'">2 · Your basket</span><span class="'+(['review','confirm','done'].includes(phase)?'current':'')+'">3 · Confirm</span></div></div><div id="checkout-content"></div>';
+      app.innerHTML='<div class="checkout-heading">'+eyebrow('SELF-CHECKOUT · DEMO PAYMENTS')+'<h1 class="page-title">'+esc(store())+'</h1><p class="page-sub">Choose. Review. Confirm. You stay in control.</p><div class="checkout-progress"><span class="'+(phase==='start'?'current':'complete')+'">1 · Identify</span><span class="'+(phase==='shop'?'current':'')+'">2 · Your basket</span><span class="'+(['review','confirm','done'].includes(phase)?'current':'')+'">3 · Confirm</span></div></div><div id="checkout-content"></div>';
       var area=document.getElementById('checkout-content');
       if(phase==='start'){
-        area.innerHTML='<div class="screen-narrow"><div class="glass panel start-card"><div class="scan-wrap"><div class="scan-ring">'+FACE_SVG+'<span class="scan-tag">Animation only</span></div></div><h2>A familiar face.<br>A fresh basket.</h2><p class="muted">Try a fictional face match, then pick or scan items from the store catalog. The face match never uses your camera; barcode scanning asks first.</p><button class="btn btn-block" id="start-demo">Start demo →</button></div></div>';
-        document.getElementById('start-demo').onclick=function(){this.disabled=true;this.textContent='Simulating match...';setTimeout(function(){if(!document.getElementById('checkout-content'))return;phase='shop';draw();},750);};
+        area.innerHTML='<div class="screen-narrow"><div class="glass panel start-card"><p class="eyebrow">REAL ON-DEVICE FACE MATCHING</p><h2>A familiar face.<br>A fresh basket.</h2><p class="muted">'+(FacePayFace.enrolled(profile)?'Your face profile is enrolled on this browser. Match with your camera to continue.':'No face is enrolled in this browser yet. Enroll on this same device first, or try the simulated demo.')+'</p>'+(FacePayFace.enrolled(profile)?'<div class="face-enrollment" id="checkout-face"></div>':'<a class="btn btn-block" href="/signup">Enroll my face</a><button class="btn btn-ghost btn-block" id="start-demo">Start simulated demo →</button><p class="local-note">Real matching works only on this device and browser. Payments are always simulated.</p>')+'</div></div>';
+        function simulate(){realMatched=false;phase='shop';draw();}
+        var demoButton=document.getElementById('start-demo');if(demoButton)demoButton.onclick=simulate;
+        var matchHost=document.getElementById('checkout-face');if(matchHost)FacePayFace.mount(matchHost,{mode:'match',descriptors:profile.faceDescriptors,name:profile.name||'Local customer',onMatch:function(){realMatched=true;phase='shop';draw();},onDemo:simulate});
       }else if(phase==='shop'){
-        area.innerHTML='<div class="matched-banner"><span class="status-dot"></span> Demo match · '+esc(profile.name?profile.name.split(' ')[0]:'Demo customer')+'<span>Test card •••• 4242</span></div><div class="shopping-grid"><section class="glass panel catalog-panel"><div class="panel-heading"><h2>Pick your items</h2><span class="badge-pill">'+priceList.length+' PRODUCTS</span></div><label class="sr-only" for="product-search">Search products</label><input class="search-input" id="product-search" placeholder="Search the store catalog" value="'+esc(query)+'"><button class="btn btn-scan" id="scan-barcode">▦ Scan a barcode</button><div class="catalog" id="catalog"></div><a class="text-link" href="/dashboard">Manage store prices ↗</a></section><section class="glass panel basket-panel"><div class="panel-heading"><h2>Your basket</h2><span id="basket-count" class="badge-pill"></span></div><div id="basket-lines"></div><div class="basket-total"><span>Total</span><strong id="basket-total"></strong></div><button class="btn btn-block" id="review-basket">Send to cashier →</button><p class="local-note">Demo prices are final. No tax or fee is added.</p></section></div>';
+        area.innerHTML='<div class="matched-banner"><span class="status-dot"></span> '+(realMatched?'Real local face match':'Simulated demo · not a face match')+' · '+esc(profile.name?profile.name.split(' ')[0]:'Demo customer')+'<span>Test card •••• 4242</span></div><div class="shopping-grid"><section class="glass panel catalog-panel"><div class="panel-heading"><h2>Pick your items</h2><span class="badge-pill">'+priceList.length+' PRODUCTS</span></div><label class="sr-only" for="product-search">Search products</label><input class="search-input" id="product-search" placeholder="Search the store catalog" value="'+esc(query)+'"><button class="btn btn-scan" id="scan-barcode">▦ Scan a barcode</button><div class="catalog" id="catalog"></div><a class="text-link" href="/dashboard">Manage store prices ↗</a></section><section class="glass panel basket-panel"><div class="panel-heading"><h2>Your basket</h2><span id="basket-count" class="badge-pill"></span></div><div id="basket-lines"></div><div class="basket-total"><span>Total</span><strong id="basket-total"></strong></div><button class="btn btn-block" id="review-basket">Send to cashier →</button><p class="local-note">Demo prices are final. No tax or fee is added.</p></section></div>';
         document.getElementById('product-search').oninput=function(){query=this.value;catalog();};catalog();basketView();
         document.getElementById('review-basket').onclick=function(){if(!basket.length)return;phase='review';draw();};
         document.getElementById('scan-barcode').onclick=openScan;
@@ -467,7 +447,7 @@
   /* ---------------- router ---------------- */
   function renderNotFound(app) { app.innerHTML='<section class="not-found glass"><span class="demo-chip">A small detour</span><p class="error-code" aria-hidden="true">404</p><h1 class="page-title">Nothing to scan here.</h1><p class="page-sub">This page may have moved, or the link took a wrong turn. Your demo data is still right where you left it.</p><div class="btn-row"><a class="btn" href="/">Back to home</a><a class="btn btn-ghost" href="/checkout">Try the demo</a></div><p class="local-note">Interactive prototype · no real payments</p></section>'; }
 
-  var pageMeta = {"home": ["Pay with your face | facePay Demo", "Explore facePay, an interactive checkout concept. Try a simulated face match, scan demo items and confirm a fictional payment. No real charges."], "signup": ["Join the demo | facePay", "Try facePay enrollment with fictional details, an animated face match and a test card. No real cards or biometric data are collected."], "checkout": ["Self-checkout demo | facePay", "Try the facePay self-checkout: browse the demo catalog, scan barcodes, review your basket and confirm a simulated payment. No real charges."], "account": ["Your demo account | facePay", "View your browser-only facePay demo profile, fictional wallet and itemized receipts. Manage receipt previews or clear your local demo data."], "business": ["For stores | facePay Demo", "Explore facePay for stores. Set up a fictional merchant, preview checkout and try a browser-only product catalog. This is not a live payment service."], "dashboard": ["Store dashboard | facePay Demo", "Preview the facePay store dashboard with clearly labeled sample analytics and a CSV catalog import for your local checkout demo."], "security": ["Trust & FAQ | facePay", "Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. No real payment or face matching."], "notfound": ["Page not found | facePay", "This page is not in the facePay demo. Return home or try the self-checkout concept. No real payments are processed."]};
+  var pageMeta = {"home": ["Pay with your face | facePay Demo", "Explore facePay, an interactive checkout concept. Try on-device face matching, scan demo items and confirm a fictional payment. No real charges."], "signup": ["Join the demo | facePay", "Try facePay enrollment with fictional details, optional local face enrollment and a test card. Face descriptors stay on your device. No real cards are collected."], "checkout": ["Self-checkout demo | facePay", "Try the facePay self-checkout: browse the demo catalog, scan barcodes, review your basket and confirm a simulated payment. No real charges."], "account": ["Your demo account | facePay", "View your browser-only facePay demo profile, fictional wallet and itemized receipts. Manage receipt previews or clear your local demo data."], "business": ["For stores | facePay Demo", "Explore facePay for stores. Set up a fictional merchant, preview checkout and try a browser-only product catalog. This is not a live payment service."], "dashboard": ["Store dashboard | facePay Demo", "Preview the facePay store dashboard with clearly labeled sample analytics and a CSV catalog import for your local checkout demo."], "security": ["Trust & FAQ | facePay", "Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. Real local face matching, demo-grade. No real payments."], "notfound": ["Page not found | facePay", "This page is not in the facePay demo. Return home or try the self-checkout concept. No real payments are processed."]};
   var routes = { notfound: renderNotFound, home: renderHome, signup: renderSignup, checkout: renderCheckoutV2, dashboard: renderDashboard, account: renderAccount, business: renderBusiness, security: renderSecurity };
 
   function route() {
@@ -478,6 +458,7 @@
     if (document.body.dataset.notFound && hash === null) name = 'notfound';
     var app = document.getElementById('app');
     closeDialog();
+    FacePayFace.stop();
     routes[name](app);
     var meta=pageMeta[name], url='https://facepay.pages.dev'+(name==='home'?'/':'/'+(name==='notfound'?'404':name));
     document.title=meta[0];

@@ -1,11 +1,11 @@
 {
   "home": [
     "Pay with your face | facePay Demo",
-    "Explore facePay, an interactive checkout concept. Try a simulated face match, scan demo items and confirm a fictional payment. No real charges."
+    "Explore facePay, an interactive checkout concept. Try on-device face matching, scan demo items and confirm a fictional payment. No real charges."
   ],
   "signup": [
     "Join the demo | facePay",
-    "Try facePay enrollment with fictional details, an animated face match and a test card. No real cards or biometric data are collected."
+    "Try facePay enrollment with fictional details, optional local face enrollment and a test card. Face descriptors stay on your device. No real cards are collected."
   ],
   "checkout": [
     "Self-checkout demo | facePay",
@@ -25,7 +25,7 @@
   ],
   "security": [
     "Trust & FAQ | facePay",
-    "Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. No real payment or face matching."
+    "Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. Real local face matching, demo-grade. No real payments."
   ],
   "notfound": [
     "Page not found | facePay",
