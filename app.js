@@ -19,7 +19,7 @@
     ['Cherry Tomatoes 500g', 9.90, '7290000000077'], ['Orange Juice 1L', 11.50, '7290000000084'], ['Butter 200g', 13.20, '7290000000091'],
     ['Pita Pack x6', 7.40, '7290000000107'], ['Greek Yogurt', 4.80, '7290000000114'], ['Honey Cake', 14.90, '7290000000121']
   ];
-  var priceList = DEFAULT_PRICES.map(function (r) { return [r[0].trim(), r[1]]; });
+  var priceList = DEFAULT_PRICES.map(function (r) { return r[2] ? [r[0].trim(), r[1], r[2]] : [r[0].trim(), r[1]]; });
   try {
     var saved = localStorage.getItem('facepay-prices');
     if (saved) { var candidate=JSON.parse(saved); if(Array.isArray(candidate) && candidate.length && candidate.length<=500 && candidate.every(function(r){return Array.isArray(r)&&typeof r[0]==='string'&&typeof r[1]==='number'&&Number.isFinite(r[1])&&r[1]>=0&&r[1]<=99999&&(r.length===2||(r.length===3&&typeof r[2]==='string'&&/^[0-9]{4,14}$/.test(r[2])));})) priceList=candidate; }
@@ -305,7 +305,7 @@
       document.getElementById('reset-data').onclick=function(){
         showDialog('<p class="eyebrow">FRESH START</p><h2>Reset this demo?</h2><p class="muted">This removes facePay data from this browser only. Downloads you saved are not deleted.</p><button class="btn btn-block" id="confirm-reset">Yes, reset demo data</button><button class="btn btn-ghost btn-block" id="cancel-reset">Keep my demo data</button>');
         document.getElementById('cancel-reset').onclick=closeDialog;
-        document.getElementById('confirm-reset').onclick=function(){['profile','history','prices','preferences','merchant'].forEach(function(k){try{localStorage.removeItem('facepay-'+k);}catch(e){}});profile={};history=[];priceList=DEFAULT_PRICES.map(function(r){return [r[0].trim(),r[1]];});merchant=null;prefs={email:true,sms:false};closeDialog();draw();toast('Demo data cleared from this browser');};
+        document.getElementById('confirm-reset').onclick=function(){['profile','history','prices','preferences','merchant'].forEach(function(k){try{localStorage.removeItem('facepay-'+k);}catch(e){}});profile={};history=[];priceList=DEFAULT_PRICES.map(function(r){return r[2]?[r[0].trim(),r[1],r[2]]:[r[0].trim(),r[1]];});merchant=null;prefs={email:true,sms:false};closeDialog();draw();toast('Demo data cleared from this browser');};
       };
     }
     function list(){
