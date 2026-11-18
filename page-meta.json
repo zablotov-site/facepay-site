@@ -29,7 +29,7 @@
   ],
   "tzedakah": [
     "Tzedakah mode | facePay Demo",
-    "Collector mode for charity collection: match the donor's face, hear the amount, confirm with one green button. Simulated charge, browser-only."
+    "Collector mode for charity collection: match the donor's face on this device, read the amount (on-device voice only, otherwise a labeled synthetic demo), confirm with one green button. Simulated charge."
   ],
   "settings": [
     "Admin settings | facePay",

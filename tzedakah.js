@@ -6,6 +6,11 @@
   var S = null, CFG = { amounts: [5, 10, 18, 36, 50, 72, 100, 180], max_amount: 5000, org_name: '' }, DONORS = [];
   var t = function (s) { return FP.t(s); }, esc = function (s) { return FP.esc(s); }, toast = function (m) { FP.toast(m); };
   FP.merge({
+    'Live voice is off here. Watch the synthetic demo amount, or pick one below.': '\u05DC\u05D9\u05D9\u05D5 \u05E7\u05D5\u05DC \u05D0\u05D9\u05D6 \u05D0\u05D5\u05E4\u05BC \u05D0\u05D9\u05E7\u05E2\u05E8. \u05D6\u05D9\u05D9 \u05D0\u05B8\u05E0 \u05D3\u05D9 \u05E1\u05D9\u05E0\u05D8\u05E2\u05D8\u05D9\u05E9\u05E2 \u05D3\u05E2\u05DE\u05D0\u05B8 \u05E1\u05D5\u05DE\u05E2, \u05D0\u05D3\u05E2\u05E8 \u05D0\u05D5\u05E4\u05BC\u05D1\u05E2\u05E8 \u05D0\u05D9\u05D9\u05E0\u05E2 \u05D0\u05D5\u05E0\u05D8\u05E2\u05DF.',
+    'Checking on-device voice\u2026': '\u05E4\u05BC\u05E8\u05D5\u05D1\u05D9\u05E8\u05D8 \u05E7\u05D5\u05DC \u05D0\u05D5\u05E4\u05BC \u05D3\u05E2\u05DD \u05D0\u05B7\u05E4\u05BC\u05D0\u05B8\u05E8\u05D0\u05B8\u05D8\u2026',
+    'SYNTHETIC VOICE DEMO \u00B7 NO REAL SPEECH IS ANALYZED': '\u05E1\u05D9\u05E0\u05D8\u05E2\u05D8\u05D9\u05E9\u05E2 \u05E7\u05D5\u05DC\u05BE\u05D3\u05E2\u05DE\u05D0\u05B8 \u00B7 \u05E7\u05D9\u05D9\u05DF \u05E8\u05D9\u05D9\u05E0\u05E2 \u05E8\u05E2\u05D3 \u05D5\u05D5\u05E2\u05E8\u05D8 \u05E0\u05D9\u05E9\u05D8 \u05D0\u05B7\u05E0\u05D0\u05B7\u05DC\u05D9\u05D6\u05D9\u05E8\u05D8',
+    'Voice is understood on this device only (browser on-device speech).': '\u05E7\u05D5\u05DC \u05D5\u05D5\u05E2\u05E8\u05D8 \u05D0\u05D5\u05E0\u05D8\u05E2\u05E8\u05E9\u05D8\u05D0\u05B7\u05E0\u05E2\u05DF \u05E0\u05D0\u05B8\u05E8 \u05D0\u05D5\u05E4\u05BC \u05D3\u05E2\u05DD \u05D0\u05B7\u05E4\u05BC\u05D0\u05B8\u05E8\u05D0\u05B8\u05D8.',
+    'On-device speech recognition is not available here, so live voice is off. Nothing is sent to a speech service. The amount below is made up, or pick one.': '\u05D0\u05D5\u05E4\u05BC \u05D3\u05E2\u05DD \u05D0\u05B7\u05E4\u05BC\u05D0\u05B8\u05E8\u05D0\u05B8\u05D8 \u05D0\u05D9\u05D6 \u05E7\u05D9\u05D9\u05DF \u05E7\u05D5\u05DC\u05BE\u05D0\u05B8\u05E0\u05D2\u05E2\u05E7\u05E0\u05E2\u05E0\u05D5\u05E0\u05D2 \u05E0\u05D9\u05E9\u05D8, \u05D0\u05D5\u05DF \u05E7\u05D9\u05D9\u05DF \u05E8\u05D3\u05E0\u05E2 \u05D5\u05D5\u05E2\u05E8\u05D8 \u05E0\u05D9\u05E9\u05D8 \u05D2\u05E2\u05E9\u05D9\u05E7\u05D8 \u05E6\u05D5 \u05D0 \u05E1\u05E8\u05D5\u05D5\u05D9\u05E1. \u05D3\u05D9 \u05E1\u05D5\u05DE\u05E2 \u05D0\u05D5\u05E0\u05D8\u05E2\u05DF \u05D0\u05D9\u05D6 \u05D0\u05D5\u05E4\u05BC\u05D2\u05E2\u05D1\u05E2\u05E8\u05D8, \u05D0\u05D3\u05E2\u05E8 \u05D0\u05D5\u05E4\u05BC\u05D1\u05E2\u05E8 \u05D0\u05D9\u05D9\u05E0\u05E2.',
     'Demo build. Use made-up donor details only.': '\u05D3\u05E2\u05DE\u05D0\u05B8\u05BE\u05D1\u05D9\u05DC\u05D3. \u05E0\u05D5\u05E5 \u05E0\u05D0\u05B8\u05E8 \u05D0\u05D5\u05E4\u05BC\u05D2\u05E2\u05D8\u05D0\u05B8\u05E0\u05E2 \u05E0\u05D3\u05D1\u05DF\u05BE\u05D3\u05D0\u05B8\u05E0\u05D9\u05E2\u05DF.',
     'Face and video clip stay on this device only.': '\u05E4\u05BC\u05E0\u05D9\u05DD \u05D0\u05D5\u05DF \u05D5\u05D5\u05D9\u05D3\u05E2\u05D0\u05B8\u05BE\u05E7\u05DC\u05D9\u05E4\u05BC \u05D1\u05DC\u05D9\u05D9\u05D1\u05E2\u05DF \u05E0\u05D0\u05B8\u05E8 \u05D0\u05D5\u05E4\u05BC \u05D3\u05E2\u05DD \u05D0\u05B7\u05E4\u05BC\u05D0\u05B8\u05E8\u05D0\u05B8\u05D8.',
     'Donors and receipts are saved on the server. Charge is simulated.': '\u05E0\u05D3\u05D1\u05E0\u05D9\u05DD \u05D0\u05D5\u05DF \u05E7\u05D1\u05DC\u05D5\u05EA \u05D5\u05D5\u05E2\u05E8\u05E2\u05DF \u05D2\u05E2\u05E9\u05E4\u05BC\u05D9\u05E1\u05E2\u05E8\u05D8 \u05D0\u05D5\u05E4\u05BC \u05D3\u05E2\u05DD \u05E1\u05E2\u05E8\u05D5\u05D5\u05E2\u05E8. \u05D3\u05E2\u05E8 \u05D0\u05B8\u05E4\u05BC\u05E9\u05D0\u05B8\u05DC \u05D0\u05D9\u05D6 \u05E1\u05D9\u05DE\u05D5\u05DC\u05D9\u05E8\u05D8.',
@@ -264,30 +269,43 @@
     var b = S.app && S.app.querySelector('#tz-rec'); if (b) b.hidden = true;
     if (S.recorder && S.recorder.state !== 'inactive') { try { S.recorder.stop(); } catch (e) {} }
   }
+  /* On-device speech only. Never fall back to network speech: if processLocally is unsupported or the language pack is missing, live speech stays OFF. */
+  function localVoice(lang) {
+    var C = SR();
+    if (!C || !('processLocally' in C.prototype) || typeof C.available !== 'function') return Promise.resolve('unsupported');
+    return C.available({ langs: [lang], processLocally: true }).then(function (st) { return st === 'available' ? 'ready' : (st === 'downloadable' || st === 'downloading') ? 'downloadable' : 'unsupported'; }).catch(function () { return 'unsupported'; });
+  }
   function vVoice() {
-    var d = S.donor, recOk = !!SR() && !S.simulated, presets = CFG.amounts || [];
+    var tok = {}; S.voiceTok = tok;
+    stage('<div class="tz-charging"><div class="tz-spin"></div><p class="tz-sub">' + esc(t('Checking on-device voice\u2026')) + '</p></div>');
+    localVoice(S.vlang).then(function (m) { if (S.voiceTok !== tok || S.view !== 'voice') return; S.voiceMode = m; drawVoice(); });
+  }
+  function drawVoice() {
+    var d = S.donor, recOk = S.voiceMode === 'ready' && !S.simulated, presets = CFG.amounts || [];
     S.amount = null; S.heard = '';
-    var el = stage(header(2, esc(t('How much')) + ', ' + esc(d.name.split(' ')[0]) + '?', esc(t('The donor just says the amount out loud, in English, Yiddish or Hebrew. Nothing to type. For example \u201Cfive dollars\u201D, \u201C18\u201D, \u201Cfinf\u201D, \u201Cakhtsn\u201D.'))) +
+    var el = stage(header(2, esc(t('How much')) + ', ' + esc(d.name.split(' ')[0]) + '?', esc(recOk ? t('The donor just says the amount out loud, in English, Yiddish or Hebrew. Nothing to type. For example \u201Cfive dollars\u201D, \u201C18\u201D, \u201Cfinf\u201D, \u201Cakhtsn\u201D.') : t('Live voice is off here. Watch the synthetic demo amount, or pick one below.'))) +
       '<div class="tz-grid"><div class="tz-cam glass"><div class="tz-vid" id="tz-vid"></div><span class="tz-rec" id="tz-rec" hidden>\u25CF REC</span><span class="tz-cam-label" id="tz-label">' + esc(S.stream ? t('LIVE \u00B7 CLIP RECORDING') : t('NO CAMERA \u00B7 SIMULATED')) + '</span>' +
       '<div class="tz-donor-chip"><strong>' + esc(d.name) + '</strong><span>' + esc(S.matchedReal ? t('Face matched') : S.simulated ? t('Simulated match') : d.id === 'guest' ? t('Guest') : t('Selected')) + '</span></div></div>' +
       '<div class="tz-side glass"><div class="tz-mic" id="tz-mic"><span class="tz-mic-dot"></span><span id="tz-mic-text">' + esc(t('Starting voice capture\u2026')) + '</span></div>' +
       '<div class="tz-heard" id="tz-heard" aria-live="polite">' + esc(t('Waiting for the donor\u2026')) + '</div>' +
       '<div class="tz-amount" id="tz-amount" hidden></div>' +
       '<button class="tz-confirm" id="tz-confirm" hidden></button>' + simBadge() +
-      '<div class="tz-row"><button class="tz-mid" id="tz-listen">' + (recOk ? '\u21BB ' + esc(t('Listen again')) : esc(t('Simulate donor voice'))) + '</button>' + (recOk ? '<button class="tz-mid" id="tz-lang" aria-label="' + esc(t('Voice language')) + '">English</button>' : '') + '</div>' +
+      '<div class="tz-row"><button class="tz-mid" id="tz-listen">' + (recOk ? '\u21BB ' + esc(t('Listen again')) : esc(t('Simulate donor voice'))) + '</button>' + (recOk ? '<button class="tz-mid" id="tz-lang" aria-label="' + esc(t('Voice language')) + '">' + (S.vlang === 'en-US' ? 'English' : '\u05E2\u05D1\u05E8\u05D9\u05EA') + '</button>' : '') + '</div>' +
       '<div id="tz-manual" hidden><p class="tz-label-small">' + esc(t('Could not catch an amount. Pick one:')) + '</p><div class="tz-presets" id="tz-presets">' + presets.map(function (p) { return '<button class="tz-pre" data-a="' + p + '">' + usd(p) + '</button>'; }).join('') + '</div>' +
       '<div class="tz-custom"><input id="tz-custom" type="number" dir="ltr" inputmode="decimal" min="1" max="' + CFG.max_amount + '" step="1" placeholder="' + esc(t('Other amount')) + '"><button class="tz-mid" id="tz-custom-ok">' + esc(t('Set')) + '</button></div></div>' +
-      (recOk ? '' : '<p class="local-note">' + esc(t('Voice recognition is not available in this browser, so the full flow runs with a simulated transcript. Chrome or Edge on Android, or Safari, supports it.')) + '</p>') +
+      (recOk ? '<p class="local-note">' + esc(t('Voice is understood on this device only (browser on-device speech).')) + '</p>' : '<p class="tz-simbadge">' + esc(t('SYNTHETIC VOICE DEMO \u00B7 NO REAL SPEECH IS ANALYZED')) + '</p><p class="local-note">' + esc(S.voiceMode === 'downloadable' ? t('This browser can download an on-device voice pack. Until then voice is off and the amount below is made up.') : t('On-device speech recognition is not available here, so live voice is off. Nothing is sent to a speech service. The amount below is made up, or pick one.')) + '</p>' + (S.voiceMode === 'downloadable' && !S.simulated ? '<button class="tz-mid" id="tz-install">' + esc(t('Download on-device voice pack')) + '</button>' : '')) +
       '<button class="tz-link" id="tz-cancel">' + (FP.lang() === 'yi' ? '\u2192 ' : '\u2190 ') + esc(t('Cancel and start over')) + '</button></div></div>');
     el.querySelector('#tz-vid').appendChild(S.video);
     if (S.stream) { S.video.srcObject = S.stream; S.video.play().catch(function () {}); startRecording(); }
     el.querySelector('#tz-cancel').onclick = leaveTo('start');
+    var inst = el.querySelector('#tz-install');
+    if (inst) inst.onclick = function () { inst.disabled = true; inst.textContent = '\u2026'; Promise.resolve(SR().install({ langs: [S.vlang], processLocally: true })).catch(function () {}).then(function () { if (S.view === 'voice') view('voice'); }); };
     el.querySelectorAll('.tz-pre').forEach(function (b) { b.onclick = function () { setAmount(Number(b.dataset.a), 'Picked by collector'); }; });
     el.querySelector('#tz-custom-ok').onclick = function () { var v = parseFloat(el.querySelector('#tz-custom').value); if (!(v > 0 && v <= CFG.max_amount)) { toast(t('Enter an amount from 1 to 5000')); return; } setAmount(Math.round(v * 100) / 100, 'Picked by collector'); };
     var lang = el.querySelector('#tz-lang');
-    if (lang) lang.onclick = function () { S.vlang = S.vlang === 'en-US' ? 'he-IL' : 'en-US'; lang.textContent = S.vlang === 'en-US' ? 'English' : '\u05E2\u05D1\u05E8\u05D9\u05EA'; listen(); };
+    if (lang) lang.onclick = function () { S.vlang = S.vlang === 'en-US' ? 'he-IL' : 'en-US'; stopRecording(); view('voice'); };
     el.querySelector('#tz-listen').onclick = function () { if (recOk) listen(); else simulateVoice(); };
-    if (recOk) listen(); else { micState('idle', t('Voice recognition unavailable here. Tap Simulate donor voice.')); S.timers.push(setTimeout(simulateVoice, 1200)); }
+    if (recOk) listen(); else { micState('idle', t('Live voice is off. Synthetic demo only.')); S.timers.push(setTimeout(simulateVoice, 1200)); }
   }
   function showManual() { var m = S.app && S.app.querySelector('#tz-manual'); if (m && !S.amount) m.hidden = false; }
   function micState(k, text) { var m = S.app.querySelector('#tz-mic'); if (!m) return; m.className = 'tz-mic ' + k; S.app.querySelector('#tz-mic-text').textContent = text; }
@@ -296,6 +314,8 @@
     var Ctor = SR(); if (!Ctor) return;
     try { if (S.rec) { S.rec.onend = null; S.rec.abort(); } } catch (e) {}
     var r = new Ctor(), got = false;
+    r.processLocally = true;
+    if (r.processLocally !== true) { micState('idle', t('Voice is off: on-device speech could not be enforced.')); showManual(); return; }
     S.rec = r; r.lang = S.vlang; r.interimResults = true; r.maxAlternatives = 5; r.continuous = false;
     r.onstart = function () { micState('live', t('Listening\u2026 say the amount')); };
     r.onresult = function (e) {
@@ -311,6 +331,7 @@
     r.onerror = function (e) {
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { micState('idle', t('Microphone blocked. Use the buttons below.')); heard('', t('Voice is blocked here. Tap Simulate, or pick an amount below.')); showManual(); var b = S.app.querySelector('#tz-listen'); if (b) { b.textContent = t('Simulate donor voice'); b.onclick = simulateVoice; } }
       else if (e.error === 'no-speech') { micState('idle', t('Nothing heard')); heard('', t('Nothing heard. Tap Listen again.')); showManual(); }
+      else if (e.error === 'language-not-supported') { micState('idle', t('Voice is off: no on-device language pack.')); heard('', t('Nothing is sent to a speech service. Pick an amount below.')); showManual(); }
       else if (e.error !== 'aborted') { micState('idle', t('Voice error') + ': ' + e.error); showManual(); }
     };
     r.onend = function () { if (!got && S.view === 'voice' && S.app.querySelector('#tz-mic.live')) { micState('idle', t('Nothing heard')); heard('', t('Nothing heard. Tap Listen again, or pick the amount.')); showManual(); } };
@@ -319,7 +340,7 @@
   var SIM = [['five dollars', 5], ['akhtsn', 18], ['zeks un draysik', 36], ['$10', 10], ['double chai', 36], ['tsen dollar', 10]];
   function simulateVoice() {
     var pick = SIM[Math.floor(Math.random() * SIM.length)], amt = parseAmount(pick[0]);
-    micState('live', t('Simulated voice\u2026')); heard(pick[0], t('simulated transcript'));
+    micState('live', t('Synthetic demo voice\u2026')); heard(pick[0], t('made-up transcript, not real speech'));
     S.timers.push(setTimeout(function () { if (S.view === 'voice') setAmount(amt, 'Simulated: \u201C' + pick[0] + '\u201D'); }, 900));
   }
   function setAmount(a, source) {

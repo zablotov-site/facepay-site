@@ -9,7 +9,7 @@ pages={
 'business':('For stores | facePay Demo','Explore facePay for stores. Set up a fictional merchant, preview checkout and try a browser-only product catalog. This is not a live payment service.'),
 'dashboard':('Store dashboard | facePay Demo','Preview the facePay store dashboard with clearly labeled sample analytics and a CSV catalog import for your local checkout demo.'),
 'security':('Trust & FAQ | facePay','Learn what the facePay prototype does, what stays in your browser and what a production payment service would need. Real local face matching, demo-grade. No real payments.'),
-'tzedakah':('Tzedakah mode | facePay Demo','Collector mode for charity collection: match the donor\'s face, hear the amount, confirm with one green button. Simulated charge, browser-only.'),
+'tzedakah':('Tzedakah mode | facePay Demo','Collector mode for charity collection: match the donor\'s face on this device, read the amount (on-device voice only, otherwise a labeled synthetic demo), confirm with one green button. Simulated charge.'),
 'settings':('Admin settings | facePay','facePay admin settings: amounts, donors and receipts. Login required.'),
 'notfound':('Page not found | facePay','This page is not in the facePay demo. Return home or try the self-checkout concept. No real payments are processed.')}
 base='https://facepay.pages.dev'
@@ -48,7 +48,7 @@ for name,(title,desc) in pages.items():
 <link rel="manifest" href="/site.webmanifest">
 <link rel="stylesheet" href="/styles.css?v=7">'''
  if name in ('notfound','settings'):head+='\n<meta name="robots" content="noindex">'
- out=shell.replace('{{HEAD}}',head).replace('/app.js?v=6','/app.js?v=7')
+ out=shell.replace('{{HEAD}}',head).replace('/app.js?v=7','/app.js?v=8')
  if name=='notfound':out=out.replace('<body>','<body data-not-found="true">')
  (root/('index.html' if name=='home' else ('404.html' if name=='notfound' else name+'.html'))).write_text(out)
 (root/'page-meta.json').write_text(json.dumps(pages,indent=2)+'\n')
